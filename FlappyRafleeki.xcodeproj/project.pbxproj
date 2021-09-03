@@ -16,6 +16,7 @@
 		3ADA097226E17EB800DDD418 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 3ADA097126E17EB800DDD418 /* Assets.xcassets */; };
 		3ADA097D26E17EB800DDD418 /* FlappyRafleekiTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3ADA097C26E17EB800DDD418 /* FlappyRafleekiTests.swift */; };
 		3ADA098826E17EB800DDD418 /* FlappyRafleekiUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3ADA098726E17EB800DDD418 /* FlappyRafleekiUITests.swift */; };
+		3ADA099826E1DA8700DDD418 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 3ADA099726E1DA8700DDD418 /* LaunchScreen.storyboard */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -51,6 +52,7 @@
 		3ADA098326E17EB800DDD418 /* FlappyRafleekiUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = FlappyRafleekiUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		3ADA098726E17EB800DDD418 /* FlappyRafleekiUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FlappyRafleekiUITests.swift; sourceTree = "<group>"; };
 		3ADA098926E17EB800DDD418 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		3ADA099726E1DA8700DDD418 /* LaunchScreen.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = LaunchScreen.storyboard; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -107,6 +109,7 @@
 				3ADA096A26E17EB400DDD418 /* GameScene.swift */,
 				3ADA096C26E17EB400DDD418 /* GameViewController.swift */,
 				3ADA096E26E17EB400DDD418 /* Main.storyboard */,
+				3ADA099726E1DA8700DDD418 /* LaunchScreen.storyboard */,
 				3ADA097126E17EB800DDD418 /* Assets.xcassets */,
 				3ADA097326E17EB800DDD418 /* Info.plist */,
 			);
@@ -237,6 +240,7 @@
 				3ADA097026E17EB400DDD418 /* Main.storyboard in Resources */,
 				3ADA096726E17EB400DDD418 /* GameScene.sks in Resources */,
 				3ADA097226E17EB800DDD418 /* Assets.xcassets in Resources */,
+				3ADA099826E1DA8700DDD418 /* LaunchScreen.storyboard in Resources */,
 				3ADA096926E17EB400DDD418 /* Actions.sks in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
