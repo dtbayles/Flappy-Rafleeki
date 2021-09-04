@@ -18,7 +18,7 @@ struct PhysicsCategory {
 class GameScene: SKScene, SKPhysicsContactDelegate {
     
     private var Ground = SKSpriteNode()
-    private var Raphael = SKSpriteNode()
+    private var Raphael : SKSpriteNode?
     private var wallPair = SKNode()
     private var moveAndRemove = SKAction()
     private var gameStarted = Bool()
@@ -68,20 +68,38 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         
         self.addChild(Ground)
         
-        Raphael = SKSpriteNode(imageNamed: "Raphael_1")
-        Raphael.size = CGSize(width: 300, height: 300)
-        Raphael.position = CGPoint(x: 0, y: 0)
+        self.Raphael = self.childNode(withName: "//character") as? SKSpriteNode
+        if let Raphael = self.Raphael {
+            //Raphael = SKSpriteNode(imageNamed: "Raphael_1")
+            //Raphael.size = CGSize(width: 300, height: 300)
+            //Raphael.position = CGPoint(x: 0, y: 0)
+            
+            Raphael.physicsBody = SKPhysicsBody(circleOfRadius: Raphael.frame.height / 2)
+            Raphael.physicsBody?.categoryBitMask = PhysicsCategory.Raphael
+            Raphael.physicsBody?.collisionBitMask = PhysicsCategory.Ground | PhysicsCategory.Wall
+            Raphael.physicsBody?.contactTestBitMask = PhysicsCategory.Ground | PhysicsCategory.Wall | PhysicsCategory.Score
+            Raphael.physicsBody?.affectedByGravity = false
+            Raphael.physicsBody?.isDynamic = true
+            
+            Raphael.zPosition = 2
+        }
         
-        Raphael.physicsBody = SKPhysicsBody(circleOfRadius: Raphael.frame.height / 2)
-        Raphael.physicsBody?.categoryBitMask = PhysicsCategory.Raphael
-        Raphael.physicsBody?.collisionBitMask = PhysicsCategory.Ground | PhysicsCategory.Wall
-        Raphael.physicsBody?.contactTestBitMask = PhysicsCategory.Ground | PhysicsCategory.Wall | PhysicsCategory.Score
-        Raphael.physicsBody?.affectedByGravity = false
-        Raphael.physicsBody?.isDynamic = true
         
-        Raphael.zPosition = 2
         
-        self.addChild(Raphael)
+        //Raphael.run(SKAction.move(by: CGVector(dx: 4, dy: 0), duration: 0.5))
+        //Raphael.run(SKAction.move(by: CGVector(dx: -4, dy: 0), duration: 0.5))
+        
+//        let raphaelUp = SKAction.run({
+//            //() in
+//            SKAction.move(by: CGVector(dx: 0, dy: 800), duration: 0.5)
+//        })
+//        let raphaelDown = SKAction.run({
+//            //() in
+//            SKAction.move(by: CGVector(dx: 0, dy: -800), duration: 0.5)
+//        })
+//        let hoverAction = SKAction.sequence([raphaelUp, raphaelDown])
+//        let hoverActionForever = SKAction.repeatForever(hoverAction)
+//        self.run(hoverActionForever)
     }
     
     override func sceneDidLoad() {
@@ -95,6 +113,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
             label.alpha = 0.0
             label.run(SKAction.fadeIn(withDuration: 2.0))
         }
+        
         /*
         // Create shape node to use during mouse interaction
         let w = (self.size.width + self.size.height) * 0.05
@@ -235,7 +254,9 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
             
             gameStarted = true
             
-            Raphael.physicsBody?.affectedByGravity = true
+            if let Raphael = self.Raphael {
+                Raphael.physicsBody?.affectedByGravity = true
+            }
             
             let spawn = SKAction.run({
                 () in
@@ -253,8 +274,10 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
             let removePipes = SKAction.removeFromParent()
             moveAndRemove = SKAction.sequence([movePipes, removePipes])
             
-            Raphael.physicsBody?.velocity = CGVector(dx: 0, dy: 0)
-            Raphael.physicsBody?.applyImpulse(CGVector(dx: 0, dy: 3000))
+            if let Raphael = self.Raphael {
+                Raphael.physicsBody?.velocity = CGVector(dx: 0, dy: 0)
+                Raphael.physicsBody?.applyImpulse(CGVector(dx: 0, dy: 6000))
+            }
         }
         else {
             
@@ -262,8 +285,10 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
                 
             }
             else {
-                Raphael.physicsBody?.velocity = CGVector(dx: 0, dy: 0)
-                Raphael.physicsBody?.applyImpulse(CGVector(dx: 0, dy: 3000))
+                if let Raphael = self.Raphael {
+                    Raphael.physicsBody?.velocity = CGVector(dx: 0, dy: 0)
+                    Raphael.physicsBody?.applyImpulse(CGVector(dx: 0, dy: 4000))
+                }
             }
         }
         
