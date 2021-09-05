@@ -17,7 +17,7 @@ struct PhysicsCategory {
 
 class GameScene: SKScene, SKPhysicsContactDelegate {
     
-    private var Ground = SKSpriteNode()
+    private var Ground : SKSpriteNode?
     private var Raphael : SKSpriteNode?
     private var wallPair = SKNode()
     private var moveAndRemove = SKAction()
@@ -31,79 +31,56 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     
     private var lastUpdateTime : TimeInterval = 0
     private var label : SKLabelNode?
-    private var scoreLabel = SKLabelNode()
-    //private var scoreLabel : SKLabelNode?
-    private var spinnyNode : SKShapeNode?
+    private var scoreLabel : SKLabelNode?
     
     func restartScene() {
-        self.removeAllChildren()
-        self.removeAllActions()
-        died = false
-        gameStarted = false
-        score = 0
-        createScene()
+        let gameScene = GameScene(fileNamed: "GameScene")
+        let transition = SKTransition.fade(withDuration: 1.0)
+        gameScene?.scaleMode = .aspectFill
+        self.view?.presentScene(gameScene!, transition: transition)
     }
     
-    func createScene() {
+    override func sceneDidLoad() {
         self.physicsWorld.contactDelegate = self
         
-        scoreLabel.position = CGPoint(x: 0, y: 0 + self.frame.height / 4)
-        scoreLabel.text = "\(score)"
-        scoreLabel.zPosition = 5
-        scoreLabel.fontSize = 200
-        self.addChild(scoreLabel)
+        self.scoreLabel = self.childNode(withName: "//scoreLabel") as? SKLabelNode
+        if let scoreLabel = self.scoreLabel {
+            //scoreLabel.position = CGPoint(x: 0, y: 0 + self.frame.height / 4)
+            scoreLabel.text = "\(score)"
+            scoreLabel.zPosition = 5
+            //scoreLabel.fontSize = 200
+        }
         
-        Ground = SKSpriteNode(imageNamed: "Ground")
-        Ground.setScale(3.0)
-        Ground.position = CGPoint(x: 0, y: -self.frame.height/2 + Ground.frame.height / 2)
-        
-        Ground.physicsBody = SKPhysicsBody(rectangleOf: Ground.size)
-        Ground.physicsBody?.categoryBitMask = PhysicsCategory.Ground
-        Ground.physicsBody?.collisionBitMask = PhysicsCategory.Raphael
-        Ground.physicsBody?.contactTestBitMask = PhysicsCategory.Raphael
-        Ground.physicsBody?.affectedByGravity = false
-        Ground.physicsBody?.isDynamic = false
-        
-        Ground.zPosition = 3
-        
-        self.addChild(Ground)
-        
+        self.Ground = self.childNode(withName: "//ground") as? SKSpriteNode
+        if let Ground = self.Ground {
+            //Ground.setScale(3.0)
+            //Ground.position = CGPoint(x: 0, y: -self.frame.height/2 + Ground.frame.height / 2)
+            
+            //Ground.physicsBody = SKPhysicsBody(rectangleOf: Ground.size)
+            Ground.physicsBody?.categoryBitMask = PhysicsCategory.Ground
+            Ground.physicsBody?.collisionBitMask = PhysicsCategory.Raphael
+            Ground.physicsBody?.contactTestBitMask = PhysicsCategory.Raphael
+            //Ground.physicsBody?.affectedByGravity = false
+            //Ground.physicsBody?.isDynamic = false
+            
+            //Ground.zPosition = 3
+        }
+                
         self.Raphael = self.childNode(withName: "//character") as? SKSpriteNode
         if let Raphael = self.Raphael {
             //Raphael = SKSpriteNode(imageNamed: "Raphael_1")
             //Raphael.size = CGSize(width: 300, height: 300)
             //Raphael.position = CGPoint(x: 0, y: 0)
             
-            Raphael.physicsBody = SKPhysicsBody(circleOfRadius: Raphael.frame.height / 2)
+            //Raphael.physicsBody = SKPhysicsBody(circleOfRadius: Raphael.frame.height / 2)
             Raphael.physicsBody?.categoryBitMask = PhysicsCategory.Raphael
             Raphael.physicsBody?.collisionBitMask = PhysicsCategory.Ground | PhysicsCategory.Wall
             Raphael.physicsBody?.contactTestBitMask = PhysicsCategory.Ground | PhysicsCategory.Wall | PhysicsCategory.Score
-            Raphael.physicsBody?.affectedByGravity = false
-            Raphael.physicsBody?.isDynamic = true
+            //Raphael.physicsBody?.affectedByGravity = false
+            //Raphael.physicsBody?.isDynamic = true
             
-            Raphael.zPosition = 2
+            //Raphael.zPosition = 2
         }
-        
-        
-        
-        //Raphael.run(SKAction.move(by: CGVector(dx: 4, dy: 0), duration: 0.5))
-        //Raphael.run(SKAction.move(by: CGVector(dx: -4, dy: 0), duration: 0.5))
-        
-//        let raphaelUp = SKAction.run({
-//            //() in
-//            SKAction.move(by: CGVector(dx: 0, dy: 800), duration: 0.5)
-//        })
-//        let raphaelDown = SKAction.run({
-//            //() in
-//            SKAction.move(by: CGVector(dx: 0, dy: -800), duration: 0.5)
-//        })
-//        let hoverAction = SKAction.sequence([raphaelUp, raphaelDown])
-//        let hoverActionForever = SKAction.repeatForever(hoverAction)
-//        self.run(hoverActionForever)
-    }
-    
-    override func sceneDidLoad() {
-        createScene()
         
         self.lastUpdateTime = 0
         
@@ -113,27 +90,13 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
             label.alpha = 0.0
             label.run(SKAction.fadeIn(withDuration: 2.0))
         }
-        
-        /*
-        // Create shape node to use during mouse interaction
-        let w = (self.size.width + self.size.height) * 0.05
-        self.spinnyNode = SKShapeNode.init(rectOf: CGSize.init(width: w, height: w), cornerRadius: w * 0.3)
-        
-        if let spinnyNode = self.spinnyNode {
-            spinnyNode.lineWidth = 2.5
-            
-            spinnyNode.run(SKAction.repeatForever(SKAction.rotate(byAngle: CGFloat(Double.pi), duration: 1)))
-            spinnyNode.run(SKAction.sequence([SKAction.wait(forDuration: 0.5),
-                                              SKAction.fadeOut(withDuration: 0.5),
-                                              SKAction.removeFromParent()]))
-        }
-        */
+
     }
     
     func createWalls() {
         
         let scoreNode = SKSpriteNode()
-        
+
         scoreNode.size = CGSize(width: 1, height: self.frame.height)
         scoreNode.position = CGPoint(x: self.frame.width, y: 0)
         scoreNode.physicsBody = SKPhysicsBody(rectangleOf: scoreNode.size)
@@ -142,6 +105,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         scoreNode.physicsBody?.categoryBitMask = PhysicsCategory.Score
         scoreNode.physicsBody?.collisionBitMask = 0
         scoreNode.physicsBody?.contactTestBitMask = PhysicsCategory.Raphael
+        scoreNode.color = .orange
         
         wallPair = SKNode()
         
@@ -162,6 +126,10 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         topWall.physicsBody?.contactTestBitMask = PhysicsCategory.Raphael
         topWall.physicsBody?.isDynamic = false
         topWall.physicsBody?.affectedByGravity = false
+        topWall.physicsBody?.friction = 0
+        topWall.physicsBody?.restitution = 0
+        topWall.physicsBody?.angularDamping = 0
+        topWall.physicsBody?.angularVelocity = 0
         
         btmWall.physicsBody = SKPhysicsBody(rectangleOf: topWall.size)
         btmWall.physicsBody?.categoryBitMask = PhysicsCategory.Wall
@@ -169,6 +137,11 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         btmWall.physicsBody?.contactTestBitMask = PhysicsCategory.Raphael
         btmWall.physicsBody?.isDynamic = false
         btmWall.physicsBody?.affectedByGravity = false
+        btmWall.physicsBody?.friction = 0
+        btmWall.physicsBody?.restitution = 0
+        btmWall.physicsBody?.angularDamping = 0
+        btmWall.physicsBody?.angularVelocity = 0
+
         
         wallPair.addChild(topWall)
         wallPair.addChild(btmWall)
@@ -225,13 +198,21 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         
         if firstBody.categoryBitMask == PhysicsCategory.Score && secondBody.categoryBitMask == PhysicsCategory.Raphael ||
             firstBody.categoryBitMask == PhysicsCategory.Raphael && secondBody.categoryBitMask == PhysicsCategory.Score {
-            score += 1
-            scoreLabel.text = "\(score)"
+            if let node = contact.bodyB.node as? SKSpriteNode {
+                if node.parent != nil {
+                    node.removeFromParent()
+                    score += 1
+                }
+            }
+            if let scoreLabel = self.scoreLabel {
+                scoreLabel.text = "\(score)"
+            }
         }
         
         if firstBody.categoryBitMask == PhysicsCategory.Wall && secondBody.categoryBitMask == PhysicsCategory.Raphael ||
             firstBody.categoryBitMask == PhysicsCategory.Raphael && secondBody.categoryBitMask == PhysicsCategory.Wall {
             died = true
+            self.isPaused = true
             createBtn()
         }
         
@@ -256,33 +237,41 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
             
             if let Raphael = self.Raphael {
                 Raphael.physicsBody?.affectedByGravity = true
+                Raphael.physicsBody?.velocity = CGVector(dx: 0, dy: 0)
+                Raphael.physicsBody?.applyImpulse(CGVector(dx: 0, dy: 6000))
             }
             
-            let spawn = SKAction.run({
+            let spawnWalls = SKAction.run({
                 () in
                 
                 self.createWalls()
             })
             
             let delay = SKAction.wait(forDuration: 1.3)
-            let spawnDelay = SKAction.sequence([spawn, delay])
+            let spawnDelay = SKAction.sequence([spawnWalls, delay])
             let spawnDelayForever = SKAction.repeatForever(spawnDelay)
             self.run(spawnDelayForever)
             
             let distance = CGFloat(self.frame.width*2)
+            print(distance)
             let movePipes = SKAction.moveBy(x: -distance, y: 0, duration: TimeInterval(0.0016 * distance))
             let removePipes = SKAction.removeFromParent()
             moveAndRemove = SKAction.sequence([movePipes, removePipes])
             
-            if let Raphael = self.Raphael {
-                Raphael.physicsBody?.velocity = CGVector(dx: 0, dy: 0)
-                Raphael.physicsBody?.applyImpulse(CGVector(dx: 0, dy: 6000))
+            if let Ground = self.Ground {
+                let moveLeft = SKAction.moveBy(x: -distance, y: 0, duration: TimeInterval(0.0016 * distance))
+                let moveReset = SKAction.moveBy(x: distance, y: 0, duration: 0)
+                let moveLoop = SKAction.sequence([moveLeft, moveReset])
+                let moveForever = SKAction.repeatForever(moveLoop)
+
+                Ground.run(moveForever)
             }
+            
         }
         else {
             
             if died == true {
-                
+
             }
             else {
                 if let Raphael = self.Raphael {
