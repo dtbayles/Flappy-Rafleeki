@@ -109,8 +109,8 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         
         wallPair = SKNode()
         
-        let topWall = SKSpriteNode(imageNamed: "Wall")
-        let btmWall = SKSpriteNode(imageNamed: "Wall")
+        let topWall = SKSpriteNode(imageNamed: "cactus")
+        let btmWall = SKSpriteNode(imageNamed: "cactus")
         
         topWall.position = CGPoint(x: self.frame.width, y: 1500)
         btmWall.position = CGPoint(x: self.frame.width, y: -1500)
@@ -120,7 +120,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         topWall.setScale(2.0)
         btmWall.setScale(2.0)
         
-        topWall.physicsBody = SKPhysicsBody(rectangleOf: topWall.size)
+        topWall.physicsBody = SKPhysicsBody(texture: SKTexture.init(imageNamed: "cactus"), alphaThreshold: 0, size: topWall.size)
         topWall.physicsBody?.categoryBitMask = PhysicsCategory.Wall
         topWall.physicsBody?.collisionBitMask = PhysicsCategory.Raphael
         topWall.physicsBody?.contactTestBitMask = PhysicsCategory.Raphael
@@ -131,7 +131,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         topWall.physicsBody?.angularDamping = 0
         topWall.physicsBody?.angularVelocity = 0
         
-        btmWall.physicsBody = SKPhysicsBody(rectangleOf: topWall.size)
+        btmWall.physicsBody = SKPhysicsBody(texture: SKTexture.init(imageNamed: "cactus"), alphaThreshold: 0, size: btmWall.size)
         btmWall.physicsBody?.categoryBitMask = PhysicsCategory.Wall
         btmWall.physicsBody?.collisionBitMask = PhysicsCategory.Raphael
         btmWall.physicsBody?.contactTestBitMask = PhysicsCategory.Raphael
@@ -259,8 +259,8 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
             moveAndRemove = SKAction.sequence([movePipes, removePipes])
             
             if let Ground = self.Ground {
-                let moveLeft = SKAction.moveBy(x: -distance, y: 0, duration: TimeInterval(0.0016 * distance))
-                let moveReset = SKAction.moveBy(x: distance, y: 0, duration: 0)
+                let moveLeft = SKAction.moveBy(x: -self.size.width, y: 0, duration: TimeInterval(0.0016 * distance))
+                let moveReset = SKAction.moveBy(x: self.size.width, y: 0, duration: 0)
                 let moveLoop = SKAction.sequence([moveLeft, moveReset])
                 let moveForever = SKAction.repeatForever(moveLoop)
 
