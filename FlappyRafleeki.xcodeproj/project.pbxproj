@@ -7,6 +7,8 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		328BEBDD27EADC88001C2586 /* vine-boom.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = 328BEBDC27EADC88001C2586 /* vine-boom.mp3 */; };
+		328BEBDF27EADD7A001C2586 /* death-sound.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = 328BEBDE27EADD7A001C2586 /* death-sound.mp3 */; };
 		3ADA096526E17EB300DDD418 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3ADA096426E17EB300DDD418 /* AppDelegate.swift */; };
 		3ADA096726E17EB400DDD418 /* GameScene.sks in Resources */ = {isa = PBXBuildFile; fileRef = 3ADA096626E17EB400DDD418 /* GameScene.sks */; };
 		3ADA096926E17EB400DDD418 /* Actions.sks in Resources */ = {isa = PBXBuildFile; fileRef = 3ADA096826E17EB400DDD418 /* Actions.sks */; };
@@ -37,6 +39,8 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		328BEBDC27EADC88001C2586 /* vine-boom.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; path = "vine-boom.mp3"; sourceTree = "<group>"; };
+		328BEBDE27EADD7A001C2586 /* death-sound.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; path = "death-sound.mp3"; sourceTree = "<group>"; };
 		3ADA096126E17EB300DDD418 /* FlappyRafleeki.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = FlappyRafleeki.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		3ADA096426E17EB300DDD418 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		3ADA096626E17EB400DDD418 /* GameScene.sks */ = {isa = PBXFileReference; lastKnownFileType = file.sks; path = GameScene.sks; sourceTree = "<group>"; };
@@ -103,6 +107,8 @@
 		3ADA096326E17EB300DDD418 /* FlappyRafleeki */ = {
 			isa = PBXGroup;
 			children = (
+				328BEBDE27EADD7A001C2586 /* death-sound.mp3 */,
+				328BEBDC27EADC88001C2586 /* vine-boom.mp3 */,
 				3ADA096426E17EB300DDD418 /* AppDelegate.swift */,
 				3ADA096626E17EB400DDD418 /* GameScene.sks */,
 				3ADA096826E17EB400DDD418 /* Actions.sks */,
@@ -240,6 +246,8 @@
 				3ADA097026E17EB400DDD418 /* Main.storyboard in Resources */,
 				3ADA096726E17EB400DDD418 /* GameScene.sks in Resources */,
 				3ADA097226E17EB800DDD418 /* Assets.xcassets in Resources */,
+				328BEBDD27EADC88001C2586 /* vine-boom.mp3 in Resources */,
+				328BEBDF27EADD7A001C2586 /* death-sound.mp3 in Resources */,
 				3ADA099826E1DA8700DDD418 /* LaunchScreen.storyboard in Resources */,
 				3ADA096926E17EB400DDD418 /* Actions.sks in Resources */,
 			);

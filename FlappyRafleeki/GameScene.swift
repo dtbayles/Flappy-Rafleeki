@@ -7,6 +7,7 @@
 
 import SpriteKit
 import GameplayKit
+import AVFoundation
 
 struct PhysicsCategory {
     static let Character : UInt32 = 0x1 << 1
@@ -33,6 +34,11 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     private var lastUpdateTime : TimeInterval = 0
     private var label : SKLabelNode?
     private var scoreLabel : SKLabelNode?
+    
+    private var deathSound = SKAction.playSoundFileNamed("death-sound.mp3", waitForCompletion: false)
+    private var tapSound = SKAction.playSoundFileNamed("vine-boom.mp3", waitForCompletion: false)
+
+    let deathSoundURL = Bundle.main.url(forResource: "death-sound", withExtension: "mp3")
     
     func restartScene() {
         let gameScene = GameScene(fileNamed: "GameScene")
@@ -202,9 +208,30 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
             firstBody.categoryBitMask == PhysicsCategory.Character && secondBody.categoryBitMask == PhysicsCategory.Wall ||
             firstBody.categoryBitMask == PhysicsCategory.Ground && secondBody.categoryBitMask == PhysicsCategory.Character ||
             firstBody.categoryBitMask == PhysicsCategory.Character && secondBody.categoryBitMask == PhysicsCategory.Ground {
-            //died = true
+            self.run(deathSound)
+//            let audioSession = AVAudioSession.sharedInstance()
+//            do {
+//                try audioSession.setCategory(.ambient, mode: .default, options: [])
+//            } catch {
+//                print("Failed to set audio session category")
+//            }
+//
+//            do {
+//                try AVAudioSession.sharedInstance().setActive(true)
+//            } catch {
+//                print("helo billy")
+//            }
+//
+//            let player = try AVAudioPlayer(contentsOf: deathSoundURL)
+//            player.play()
+//
+            //AVAudioSession.sharedInstance().setCategory(AVAudioSession.Category.ambient, error: nil)
+            //AVAudioSession.sharedInstance().setActive(true, error: nil)
+            
+            
+            died = true
             //self.isPaused = true
-            //createBtn()
+            createBtn()
         }
         
 
@@ -235,8 +262,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
                 character.physicsBody?.applyImpulse(CGVector(dx: 0, dy: 6000))
             }
             
-            let soundAction = SKAction.playSoundFileNamed("vine-boom", waitForCompletion: false)
-            self.run(soundAction)
+            self.run(tapSound)
             
             let spawnWalls = SKAction.run({
                 () in
@@ -273,13 +299,14 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         else {
             
             if died == true {
-
+                self.run(deathSound)
             }
             else {
                 if let Raphael = self.character {
                     Raphael.physicsBody?.velocity = CGVector(dx: 0, dy: 0)
                     Raphael.physicsBody?.applyImpulse(CGVector(dx: 0, dy: 4000))
                 }
+                self.run(tapSound)
             }
         }
         
