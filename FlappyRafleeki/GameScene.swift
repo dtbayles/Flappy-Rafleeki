@@ -9,7 +9,7 @@ import SpriteKit
 import GameplayKit
 
 struct PhysicsCategory {
-    static let Raphael : UInt32 = 0x1 << 1
+    static let Character : UInt32 = 0x1 << 1
     static let Ground : UInt32 = 0x1 << 2
     static let Wall : UInt32 = 0x1 << 3
     static let Score : UInt32 = 0x1 << 4
@@ -17,8 +17,9 @@ struct PhysicsCategory {
 
 class GameScene: SKScene, SKPhysicsContactDelegate {
     
-    private var Ground : SKSpriteNode?
-    private var Raphael : SKSpriteNode?
+    private var ground : SKSpriteNode?
+    private var sky : SKSpriteNode?
+    private var character : SKSpriteNode?
     private var wallPair = SKNode()
     private var moveAndRemove = SKAction()
     private var gameStarted = Bool()
@@ -40,9 +41,11 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         self.view?.presentScene(gameScene!, transition: transition)
     }
     
+    // When the scene is presented. Initial setup.
     override func sceneDidLoad() {
         self.physicsWorld.contactDelegate = self
         
+        // Setup the score label
         self.scoreLabel = self.childNode(withName: "//scoreLabel") as? SKLabelNode
         if let scoreLabel = self.scoreLabel {
             //scoreLabel.position = CGPoint(x: 0, y: 0 + self.frame.height / 4)
@@ -51,35 +54,41 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
             //scoreLabel.fontSize = 200
         }
         
-        self.Ground = self.childNode(withName: "//ground") as? SKSpriteNode
-        if let Ground = self.Ground {
+        // Setup the sky
+        self.sky = self.childNode(withName: "//sky") as? SKSpriteNode
+        
+        // Setup the ground
+        self.ground = self.childNode(withName: "//ground") as? SKSpriteNode
+        if let ground = self.ground {
             //Ground.setScale(3.0)
             //Ground.position = CGPoint(x: 0, y: -self.frame.height/2 + Ground.frame.height / 2)
             
-            //Ground.physicsBody = SKPhysicsBody(rectangleOf: Ground.size)
-            Ground.physicsBody?.categoryBitMask = PhysicsCategory.Ground
-            Ground.physicsBody?.collisionBitMask = PhysicsCategory.Raphael
-            Ground.physicsBody?.contactTestBitMask = PhysicsCategory.Raphael
-            //Ground.physicsBody?.affectedByGravity = false
-            //Ground.physicsBody?.isDynamic = false
+            //ground.physicsBody = SKPhysicsBody(rectangleOf: CGSize(width: self.frame.size.width, height: ground.size.height * 2.0))
+            ground.physicsBody = SKPhysicsBody(rectangleOf: ground.size)
+            ground.physicsBody?.categoryBitMask = PhysicsCategory.Ground
+            ground.physicsBody?.collisionBitMask = PhysicsCategory.Character
+            ground.physicsBody?.contactTestBitMask = PhysicsCategory.Character
+            ground.physicsBody?.affectedByGravity = false
+            ground.physicsBody?.isDynamic = false
             
             //Ground.zPosition = 3
         }
-                
-        self.Raphael = self.childNode(withName: "//character") as? SKSpriteNode
-        if let Raphael = self.Raphael {
-            //Raphael = SKSpriteNode(imageNamed: "Raphael_1")
-            //Raphael.size = CGSize(width: 300, height: 300)
-            //Raphael.position = CGPoint(x: 0, y: 0)
+        
+        // Setup the character
+        self.character = self.childNode(withName: "//character") as? SKSpriteNode
+        if let character = self.character {
+            //character = SKSpriteNode(imageNamed: "Raphael_1")
+            //character.size = CGSize(width: 300, height: 300)
+            //character.position = CGPoint(x: 0, y: 0)
             
-            //Raphael.physicsBody = SKPhysicsBody(circleOfRadius: Raphael.frame.height / 2)
-            Raphael.physicsBody?.categoryBitMask = PhysicsCategory.Raphael
-            Raphael.physicsBody?.collisionBitMask = PhysicsCategory.Ground | PhysicsCategory.Wall
-            Raphael.physicsBody?.contactTestBitMask = PhysicsCategory.Ground | PhysicsCategory.Wall | PhysicsCategory.Score
-            //Raphael.physicsBody?.affectedByGravity = false
-            //Raphael.physicsBody?.isDynamic = true
+            //character.physicsBody = SKPhysicsBody(circleOfRadius: Raphael.frame.height / 2)
+            character.physicsBody?.categoryBitMask = PhysicsCategory.Character
+            character.physicsBody?.collisionBitMask = PhysicsCategory.Ground | PhysicsCategory.Wall
+            character.physicsBody?.contactTestBitMask = PhysicsCategory.Ground | PhysicsCategory.Wall | PhysicsCategory.Score
+            //character.physicsBody?.affectedByGravity = false
+            //character.physicsBody?.isDynamic = true
             
-            //Raphael.zPosition = 2
+            //character.zPosition = 2
         }
         
         self.lastUpdateTime = 0
@@ -104,13 +113,13 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         scoreNode.physicsBody?.isDynamic = false
         scoreNode.physicsBody?.categoryBitMask = PhysicsCategory.Score
         scoreNode.physicsBody?.collisionBitMask = 0
-        scoreNode.physicsBody?.contactTestBitMask = PhysicsCategory.Raphael
-        scoreNode.color = .orange
+        scoreNode.physicsBody?.contactTestBitMask = PhysicsCategory.Character
+        //scoreNode.color = .orange
         
         wallPair = SKNode()
         
-        let topWall = SKSpriteNode(imageNamed: "cactus")
-        let btmWall = SKSpriteNode(imageNamed: "cactus")
+        let topWall = SKSpriteNode(imageNamed: "wall-building")
+        let btmWall = SKSpriteNode(imageNamed: "wall-building")
         
         topWall.position = CGPoint(x: self.frame.width, y: 1500)
         btmWall.position = CGPoint(x: self.frame.width, y: -1500)
@@ -120,21 +129,25 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         topWall.setScale(2.0)
         btmWall.setScale(2.0)
         
-        topWall.physicsBody = SKPhysicsBody(texture: SKTexture.init(imageNamed: "cactus"), alphaThreshold: 0, size: topWall.size)
+        // Getting the texture is an expensive task and causes a slight lag
+        //topWall.physicsBody = SKPhysicsBody(texture: SKTexture.init(imageNamed: "Wall"), alphaThreshold: 0, size: topWall.size)
+        topWall.physicsBody = SKPhysicsBody(rectangleOf: topWall.size)
         topWall.physicsBody?.categoryBitMask = PhysicsCategory.Wall
-        topWall.physicsBody?.collisionBitMask = PhysicsCategory.Raphael
-        topWall.physicsBody?.contactTestBitMask = PhysicsCategory.Raphael
+        topWall.physicsBody?.collisionBitMask = PhysicsCategory.Character
+        topWall.physicsBody?.contactTestBitMask = PhysicsCategory.Character
         topWall.physicsBody?.isDynamic = false
         topWall.physicsBody?.affectedByGravity = false
         topWall.physicsBody?.friction = 0
         topWall.physicsBody?.restitution = 0
         topWall.physicsBody?.angularDamping = 0
         topWall.physicsBody?.angularVelocity = 0
-        
-        btmWall.physicsBody = SKPhysicsBody(texture: SKTexture.init(imageNamed: "cactus"), alphaThreshold: 0, size: btmWall.size)
+
+        // Getting the texture is an expensive task and causes a slight lag
+        //btmWall.physicsBody = SKPhysicsBody(texture: SKTexture.init(imageNamed: "Wall"), alphaThreshold: 0, size: btmWall.size)
+        btmWall.physicsBody = SKPhysicsBody(rectangleOf: btmWall.size)
         btmWall.physicsBody?.categoryBitMask = PhysicsCategory.Wall
-        btmWall.physicsBody?.collisionBitMask = PhysicsCategory.Raphael
-        btmWall.physicsBody?.contactTestBitMask = PhysicsCategory.Raphael
+        btmWall.physicsBody?.collisionBitMask = PhysicsCategory.Character
+        btmWall.physicsBody?.contactTestBitMask = PhysicsCategory.Character
         btmWall.physicsBody?.isDynamic = false
         btmWall.physicsBody?.affectedByGravity = false
         btmWall.physicsBody?.friction = 0
@@ -159,30 +172,6 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     
     }
     
-    func touchDown(atPoint pos : CGPoint) {
-//        if let n = self.spinnyNode?.copy() as! SKShapeNode? {
-//            n.position = pos
-//            n.strokeColor = SKColor.green
-//            self.addChild(n)
-//        }
-    }
-    
-    func touchMoved(toPoint pos : CGPoint) {
-//        if let n = self.spinnyNode?.copy() as! SKShapeNode? {
-//            n.position = pos
-//            n.strokeColor = SKColor.blue
-//            self.addChild(n)
-//        }
-    }
-    
-    func touchUp(atPoint pos : CGPoint) {
-//        if let n = self.spinnyNode?.copy() as! SKShapeNode? {
-//            n.position = pos
-//            n.strokeColor = SKColor.red
-//            self.addChild(n)
-//        }
-    }
-    
     func createBtn() {
         //restartBtn = SKSpriteNode(color: SKColor.blue, size: CGSize(width: 400, height: 200))
         restartBtn = SKLabelNode(text: "Reset")
@@ -196,8 +185,8 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         let firstBody = contact.bodyA
         let secondBody = contact.bodyB
         
-        if firstBody.categoryBitMask == PhysicsCategory.Score && secondBody.categoryBitMask == PhysicsCategory.Raphael ||
-            firstBody.categoryBitMask == PhysicsCategory.Raphael && secondBody.categoryBitMask == PhysicsCategory.Score {
+        if firstBody.categoryBitMask == PhysicsCategory.Score && secondBody.categoryBitMask == PhysicsCategory.Character ||
+            firstBody.categoryBitMask == PhysicsCategory.Character && secondBody.categoryBitMask == PhysicsCategory.Score {
             if let node = contact.bodyB.node as? SKSpriteNode {
                 if node.parent != nil {
                     node.removeFromParent()
@@ -209,22 +198,27 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
             }
         }
         
-        if firstBody.categoryBitMask == PhysicsCategory.Wall && secondBody.categoryBitMask == PhysicsCategory.Raphael ||
-            firstBody.categoryBitMask == PhysicsCategory.Raphael && secondBody.categoryBitMask == PhysicsCategory.Wall {
-            died = true
-            self.isPaused = true
-            createBtn()
+        if firstBody.categoryBitMask == PhysicsCategory.Wall && secondBody.categoryBitMask == PhysicsCategory.Character ||
+            firstBody.categoryBitMask == PhysicsCategory.Character && secondBody.categoryBitMask == PhysicsCategory.Wall ||
+            firstBody.categoryBitMask == PhysicsCategory.Ground && secondBody.categoryBitMask == PhysicsCategory.Character ||
+            firstBody.categoryBitMask == PhysicsCategory.Character && secondBody.categoryBitMask == PhysicsCategory.Ground {
+            //died = true
+            //self.isPaused = true
+            //createBtn()
         }
+        
+
         
     }
     
+    // Tells this object that one or more new touches occurred in a view or window.
     override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
         if let label = self.label {
             label.run(SKAction.init(named: "FadeOut")!, withKey: "fadeOut")
         }
 
+        // This makes the "Reset" button work when clicked
         for t in touches {
-            self.touchDown(atPoint: t.location(in: self))
             let location = t.location(in: self)
             if died == true {
                 if restartBtn.contains(location) { restartScene() }
@@ -235,11 +229,14 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
             
             gameStarted = true
             
-            if let Raphael = self.Raphael {
-                Raphael.physicsBody?.affectedByGravity = true
-                Raphael.physicsBody?.velocity = CGVector(dx: 0, dy: 0)
-                Raphael.physicsBody?.applyImpulse(CGVector(dx: 0, dy: 6000))
+            if let character = self.character {
+                character.physicsBody?.affectedByGravity = true
+                character.physicsBody?.velocity = CGVector(dx: 0, dy: 0)
+                character.physicsBody?.applyImpulse(CGVector(dx: 0, dy: 6000))
             }
+            
+            let soundAction = SKAction.playSoundFileNamed("vine-boom", waitForCompletion: false)
+            self.run(soundAction)
             
             let spawnWalls = SKAction.run({
                 () in
@@ -258,13 +255,18 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
             let removePipes = SKAction.removeFromParent()
             moveAndRemove = SKAction.sequence([movePipes, removePipes])
             
-            if let Ground = self.Ground {
-                let moveLeft = SKAction.moveBy(x: -self.size.width, y: 0, duration: TimeInterval(0.0016 * distance))
+            if let ground = self.ground {
+                let moveLeft = SKAction.moveBy(x: -self.size.width, y: 0, duration: TimeInterval(0.002 * ground.size.width * 2.0))
                 let moveReset = SKAction.moveBy(x: self.size.width, y: 0, duration: 0)
-                let moveLoop = SKAction.sequence([moveLeft, moveReset])
-                let moveForever = SKAction.repeatForever(moveLoop)
-
-                Ground.run(moveForever)
+                let moveForever = SKAction.repeatForever(SKAction.sequence([moveLeft, moveReset]))
+                ground.run(moveForever)
+            }
+            
+            if let sky = self.sky {
+                let moveLeft = SKAction.moveBy(x: -self.size.width, y: 0, duration: TimeInterval(0.004 * sky.size.width * 2.0))
+                let moveReset = SKAction.moveBy(x: self.size.width, y: 0, duration: 0)
+                let moveForever = SKAction.repeatForever(SKAction.sequence([moveLeft, moveReset]))
+                sky.run(moveForever)
             }
             
         }
@@ -274,7 +276,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
 
             }
             else {
-                if let Raphael = self.Raphael {
+                if let Raphael = self.character {
                     Raphael.physicsBody?.velocity = CGVector(dx: 0, dy: 0)
                     Raphael.physicsBody?.applyImpulse(CGVector(dx: 0, dy: 4000))
                 }
@@ -283,19 +285,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         
     }
     
-    override func touchesMoved(_ touches: Set<UITouch>, with event: UIEvent?) {
-//        for t in touches { self.touchMoved(toPoint: t.location(in: self)) }
-    }
-    
-    override func touchesEnded(_ touches: Set<UITouch>, with event: UIEvent?) {
-//        for t in touches { self.touchUp(atPoint: t.location(in: self)) }
-    }
-    
-    override func touchesCancelled(_ touches: Set<UITouch>, with event: UIEvent?) {
-//        for t in touches { self.touchUp(atPoint: t.location(in: self)) }
-    }
-    
-    
+    // Tells your app to perform any app-specific logic to update your scene.
     override func update(_ currentTime: TimeInterval) {
         // Called before each frame is rendered
         
